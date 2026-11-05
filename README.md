@@ -1,0 +1,2 @@
+# BlindRank
+Blind ranking website!
