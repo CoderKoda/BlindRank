@@ -84,7 +84,11 @@ function renderPage(metricKey) {
     }
     return tracks[0];
   }
-  data.microRows.forEach(row=>addTrack(`${row.name} <span class="per-hour-count">(${formatRate(row.rateHr,data.unit)})</span>`,row.rateHr,microTile,1));
+  data.microRows.forEach(row=>{
+    const pxPerSec=(row.rateHr/3600)*microTile.width;
+    const stackCount=Math.max(1,Math.ceil(pxPerSec/900));
+    addTrack(`${row.name} <span class="per-hour-count">(${formatRate(row.rateHr,data.unit)})</span>`,row.rateHr,microTile,1,1,stackCount);
+  });
   const userTrack=addTrack(`<div class="user-row">Your Hourly Usage: <input type="number" min="0" value="${userHourlyRate}" class="hour-input" id="userInput"> <span class="per-hour-count">${data.unit}/hr</span></div>`,userHourlyRate,microTile,1);
   document.getElementById('userInput').addEventListener('input',e=>{
     userHourlyRate=Math.max(0,parseFloat(e.target.value)||0);
