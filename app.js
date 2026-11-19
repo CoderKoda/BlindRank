@@ -1,19 +1,19 @@
 const DATASETS = {
   energy: {
-    unit: 'kWh', color: '#f5b014', symbol: '⚡', macroMultiplier: 1e6,
-    macroLabel: '1,000,000 kWh (1 GWh)',
+    unit: 'kWh', color: '#f5b014', symbol: '⚡', macroMultiplier: 250000,
+    macroLabel: '250,000 kWh (250 MWh)',
     microRows: [{name:'Average Person (US)',rateHr:1.2},{name:'Average Household',rateHr:3.1},{name:'Small Town (10k people)',rateHr:12200}],
     macroRows: [{name:'Major City (1M people)',rateHr:1220000},{name:'United States',rateHr:468000000},{name:'Whole Planet (8.1B people)',rateHr:3240000000}]
   },
   water: {
-    unit: 'L', color: '#2b90d9', symbol: '💧', macroMultiplier: 1e6,
-    macroLabel: '1,000,000 Liters',
+    unit: 'L', color: '#2b90d9', symbol: '💧', macroMultiplier: 250000,
+    macroLabel: '250,000 Liters',
     microRows: [{name:'Average Person (US)',rateHr:13},{name:'Average Household',rateHr:32},{name:'Small Town (10k people)',rateHr:130000}],
     macroRows: [{name:'Major City (1M people)',rateHr:13000000},{name:'United States',rateHr:4680000000},{name:'Whole Planet (8.1B people)',rateHr:450000000000}]
   },
   co2: {
-    unit: 'kg CO₂', color: '#555555', symbol: '☁️', macroMultiplier: 1e6,
-    macroLabel: '1,000,000 kg (1 Kiloton)',
+    unit: 'kg CO₂', color: '#555555', symbol: '☁️', macroMultiplier: 250000,
+    macroLabel: '250,000 kg (250 tonnes)',
     microRows: [{name:'Average Person (US)',rateHr:1.65},{name:'Average Household',rateHr:4.1},{name:'Small Town (10k people)',rateHr:16500}],
     macroRows: [{name:'Major City (1M people)',rateHr:1650000},{name:'United States',rateHr:540000000},{name:'Whole Planet (8.1B people)',rateHr:4210000000}]
   },
@@ -46,7 +46,7 @@ function createTileCanvas(color, symbol, isMacro) {
   ctx.strokeRect(10,11,w-20,h-22);
   ctx.fillStyle = '#fff'; ctx.font = isMacro ? 'bold 20px "PT Serif", serif' : '24px sans-serif';
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText(isMacro ? `${symbol} 1M` : symbol,w/2,h/2+1);
+  ctx.fillText(isMacro ? `${symbol} 250K` : symbol,w/2,h/2+1);
   return tile;
 }
 function formatRate(num,unit) {
