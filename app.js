@@ -6,8 +6,8 @@ const DATASETS = {
     macroRows: [{name:'Major City (1M people)',rateHr:1220000},{name:'United States',rateHr:468000000},{name:'Whole Planet (8.1B people)',rateHr:3240000000}]
   },
   water: {
-    unit: 'L', color: '#2b90d9', symbol: '💧', macroMultiplier: 100000,
-    macroLabel: '100,000 Liters',
+    unit: 'L', color: '#2b90d9', symbol: '💧', macroMultiplier: 1000000,
+    macroLabel: '1,000,000 Liters',
     microRows: [{name:'Average Person (US)',rateHr:13},{name:'Average Household',rateHr:32},{name:'Small Town (10k people)',rateHr:130000}],
     macroRows: [{name:'Major City (1M people)',rateHr:13000000},{name:'United States',rateHr:4680000000},{name:'Whole Planet (8.1B people)',rateHr:450000000000}]
   },
@@ -46,7 +46,7 @@ function createTileCanvas(color, symbol, isMacro) {
   ctx.strokeRect(10,11,w-20,h-22);
   ctx.fillStyle = '#fff'; ctx.font = isMacro ? 'bold 20px "PT Serif", serif' : '24px sans-serif';
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText(isMacro ? `${symbol} 100K` : symbol,w/2,h/2+1);
+  ctx.fillText(isMacro ? `${symbol} 1M` : symbol,w/2,h/2+1);
   return tile;
 }
 function formatRate(num,unit) {
