@@ -95,7 +95,7 @@ function renderPage(metricKey) {
   mid.appendChild(img); mid.appendChild(document.createTextNode(` = ${data.macroLabel}`)); container.appendChild(mid);
   data.macroRows.forEach(row=>{
     const pxPerSec=((row.rateHr/3600)/data.macroMultiplier)*macroTile.width;
-    const stackCount=Math.max(1,Math.ceil(pxPerSec/900));
+    const stackCount=row.name.toLowerCase().includes('whole planet') ? Math.max(1,Math.ceil(pxPerSec/900)) : 1;
     addTrack(`${row.name} <span class="per-hour-count">(${formatRate(row.rateHr,data.unit)})</span>`,row.rateHr,macroTile,data.macroMultiplier,1,stackCount);
   });
   resizeCanvases();
