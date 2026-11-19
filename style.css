@@ -358,3 +358,6 @@ canvas {
   font-size: 15px;
   color: var(--muted-text);
 }
+
+/* Home navigation on metric pages */
+.home-tab { font-weight: 700; }
