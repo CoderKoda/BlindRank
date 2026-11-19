@@ -68,13 +68,13 @@ function renderPage(metricKey) {
   const borderUrl=`url(${microTile.toDataURL()})`;
   document.getElementById('topBorder').style.backgroundImage=borderUrl;
   document.getElementById('bottomBorder').style.backgroundImage=borderUrl;
-  function addTrack(labelHtml,rateHr,tile,unitValue) {
+  function addTrack(labelHtml,rateHr,tile,unitValue,visualSpeed=1) {
     const desc=document.createElement('div');
     desc.className='description'; desc.innerHTML=labelHtml; container.appendChild(desc);
     const canvas=document.createElement('canvas');
     canvas.style.width='100%'; canvas.style.height='75px';
     container.appendChild(canvas);
-    const track={canvas,ctx:canvas.getContext('2d'),tile,rateHr,unitValue,offsetX:0,logicalWidth:0};
+    const track={canvas,ctx:canvas.getContext('2d'),tile,rateHr,unitValue,visualSpeed,offsetX:0,logicalWidth:0};
     activeCanvases.push(track); return track;
   }
   data.microRows.forEach(row=>addTrack(`${row.name} <span class="per-hour-count">(${formatRate(row.rateHr,data.unit)})</span>`,row.rateHr,microTile,1));
@@ -86,7 +86,7 @@ function renderPage(metricKey) {
   const mid=document.createElement('div'); mid.className='mid-explanation';
   const img=document.createElement('img'); img.src=macroTile.toDataURL(); img.className='mid-icon';
   mid.appendChild(img); mid.appendChild(document.createTextNode(` = ${data.macroLabel}`)); container.appendChild(mid);
-  data.macroRows.forEach(row=>addTrack(`${row.name} <span class="per-hour-count">(${formatRate(row.rateHr,data.unit)})</span>`,row.rateHr,macroTile,data.macroMultiplier));
+  data.macroRows.forEach((row,index)=>addTrack(`${row.name} <span class="per-hour-count">(${formatRate(row.rateHr,data.unit)})</span>`,row.rateHr,macroTile,data.macroMultiplier,index===0?5:1));
   resizeCanvases();
 }
 function resizeCanvases() {
@@ -103,9 +103,9 @@ let lastTime=performance.now();
 function animate(now) {
   const dt=Math.min((now-lastTime)/1000,0.05); lastTime=now;
   activeCanvases.forEach(track=>{
-    const {ctx,canvas,tile,rateHr,unitValue,logicalWidth}=track;
+    const {ctx,canvas,tile,rateHr,unitValue,visualSpeed=1,logicalWidth}=track;
     const tileW=tile.width;
-    const pxPerSec=((rateHr/3600)/unitValue)*tileW;
+    const pxPerSec=((rateHr/3600)/unitValue)*tileW*visualSpeed;
     track.offsetX=(track.offsetX+pxPerSec*dt)%tileW;
     ctx.clearRect(0,0,logicalWidth,75);
     if(pxPerSec>2200){
