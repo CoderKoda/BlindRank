@@ -49,7 +49,7 @@ const DATASETS = {
       { name: 'United States', rateHr: 540000000 },
       { name: 'Whole Planet (8.1B people)', rateHr: 4210000000 }
     ]
-  }
+  },
   waste: {
     unit: 'kg', color: '#55a65c', symbol: '♻️', macroMultiplier: 1000000,
     macroLabel: '1,000,000 kg (1,000 tonnes)',
