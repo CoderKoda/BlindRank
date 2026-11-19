@@ -18,8 +18,8 @@ const DATASETS = {
     macroRows: [{name:'Major City (1M people)',rateHr:1650000},{name:'United States',rateHr:540000000},{name:'Whole Planet (8.1B people)',rateHr:4210000000}]
   },
   food: {
-    unit: 'kg', color: '#d89b43', symbol: '🍎', macroMultiplier: 1e6,
-    macroLabel: '1,000,000 kg (1,000 tonnes)',
+    unit: 'kg', color: '#d89b43', symbol: '🍎', macroMultiplier: 250000,
+    macroLabel: '250,000 kg (250 tonnes)',
     microRows: [{name:'Average Person (US)',rateHr:0.02},{name:'Average Household',rateHr:0.08},{name:'Small Town (10k people)',rateHr:200}],
     macroRows: [{name:'Major City (1M people)',rateHr:20000},{name:'United States (estimate)',rateHr:7000000},{name:'Whole Planet (estimate)',rateHr:120000000}]
   },
