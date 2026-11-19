@@ -98,7 +98,7 @@ function renderPage(metricKey) {
     const rowMultiplier=(metricKey==='water' && isWholePlanet) ? 1000000 : 100000;
     const rowTile=(metricKey==='water' && isWholePlanet) ? createTileCanvas(data.color,data.symbol,true,'1M') : macroTile;
     const pxPerSec=((row.rateHr/3600)/rowMultiplier)*rowTile.width;
-    const stackCount=isWholePlanet ? Math.max(1,Math.ceil(pxPerSec/900)) : 1;
+    const stackCount=isWholePlanet ? Math.max(2,Math.ceil(pxPerSec/900)) : 1;
     addTrack(`${row.name} <span class="per-hour-count">(${formatRate(row.rateHr,data.unit)})</span>`,row.rateHr,rowTile,rowMultiplier,1,stackCount);
   });
   resizeCanvases();
