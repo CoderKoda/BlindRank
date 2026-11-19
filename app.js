@@ -64,6 +64,7 @@ function renderPage(metricKey) {
   container.innerHTML='';
   activeCanvases=[];
   const microTile=createTileCanvas(data.color,data.symbol,false);
+  const smallTownWaterTile=(metricKey==='water') ? createTileCanvas(data.color,data.symbol,true,'10K') : microTile;
   const macroTile=createTileCanvas(data.color,data.symbol,true,'100K');
   const borderUrl=`url(${microTile.toDataURL()})`;
   document.getElementById('topBorder').style.backgroundImage=borderUrl;
@@ -85,9 +86,12 @@ function renderPage(metricKey) {
     return tracks[0];
   }
   data.microRows.forEach(row=>{
-    const pxPerSec=(row.rateHr/3600)*microTile.width;
+    const isSmallTownWater=metricKey==='water' && row.name.toLowerCase().includes('small town');
+    const rowTile=isSmallTownWater ? smallTownWaterTile : microTile;
+    const rowMultiplier=isSmallTownWater ? 10000 : 1;
+    const pxPerSec=(row.rateHr/3600/rowMultiplier)*rowTile.width;
     const stackCount=Math.max(1,Math.ceil(pxPerSec/900));
-    addTrack(`${row.name} <span class="per-hour-count">(${formatRate(row.rateHr,data.unit)})</span>`,row.rateHr,microTile,1,1,stackCount);
+    addTrack(`${row.name} <span class="per-hour-count">(${formatRate(row.rateHr,data.unit)})</span>`,row.rateHr,rowTile,rowMultiplier,1,stackCount);
   });
   const userTrack=addTrack(`<div class="user-row">Your Hourly Usage: <input type="number" min="0" value="${userHourlyRate}" class="hour-input" id="userInput"> <span class="per-hour-count">${data.unit}/hr</span></div>`,userHourlyRate,microTile,1);
   document.getElementById('userInput').addEventListener('input',e=>{
