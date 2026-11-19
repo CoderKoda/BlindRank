@@ -65,7 +65,7 @@ function renderPage(metricKey) {
   activeCanvases=[];
   const microTile=createTileCanvas(data.color,data.symbol,false);
   const smallTownWaterTile=(metricKey==='water') ? createTileCanvas(data.color,data.symbol,true,'10K') : microTile;
-  const macroTile=createTileCanvas(data.color,data.symbol,true,'100K');
+  const macroTile=createTileCanvas(data.color,data.symbol,true,metricKey==='waste' ? '10K' : '100K');
   const borderUrl=`url(${microTile.toDataURL()})`;
   document.getElementById('topBorder').style.backgroundImage=borderUrl;
   document.getElementById('bottomBorder').style.backgroundImage=borderUrl;
@@ -104,7 +104,7 @@ function renderPage(metricKey) {
   mid.appendChild(img); mid.appendChild(document.createTextNode(` = ${data.macroLabel}`)); container.appendChild(mid);
   data.macroRows.forEach(row=>{
     const isWholePlanet=row.name.toLowerCase().includes('whole planet');
-    const rowMultiplier=(metricKey==='water' && isWholePlanet) ? 1000000 : 100000;
+    const rowMultiplier=(metricKey==='water' && isWholePlanet) ? 1000000 : (metricKey==='waste' ? 10000 : 100000);
     const rowTile=(metricKey==='water' && isWholePlanet) ? createTileCanvas(data.color,data.symbol,true,'1M') : macroTile;
     const pxPerSec=((row.rateHr/3600)/rowMultiplier)*rowTile.width;
     const stackCount=Math.max(1,Math.ceil(pxPerSec/900));
