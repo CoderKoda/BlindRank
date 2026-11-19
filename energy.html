@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Consuming Energy</title>
+  <link href="https://googleapis.com" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body data-metric="energy">
+
+  <div class="border-strip" id="topBorder"></div>
+
+  <div class="title-slide">
+    <div class="title">Consuming Energy</div>
+    <div class="credit">Inspired by Neal Agarwal’s Printing Money</div>
+    <nav class="metric-tabs">
+      <a href="energy.html" class="tab-btn active">⚡ Energy</a>
+      <a href="water.html" class="tab-btn">💧 Water</a>
+      <a href="co2.html" class="tab-btn">☁️ CO₂ Emissions</a>
+    </nav>
+  </div>
+
+  <div class="container" id="stripsContainer"></div>
+
+  <div class="border-strip" id="bottomBorder"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
