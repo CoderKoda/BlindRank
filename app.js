@@ -6,8 +6,8 @@ const DATASETS = {
     macroRows: [{name:'Major City (1M people)',rateHr:1220000},{name:'United States',rateHr:468000000},{name:'Whole Planet (8.1B people)',rateHr:3240000000}]
   },
   water: {
-    unit: 'L', color: '#2b90d9', symbol: '💧', macroMultiplier: 1000000,
-    macroLabel: '1,000,000 Liters',
+    unit: 'L', color: '#2b90d9', symbol: '💧', macroMultiplier: 100000,
+    macroLabel: '100,000 Liters',
     microRows: [{name:'Average Person (US)',rateHr:13},{name:'Average Household',rateHr:32},{name:'Small Town (10k people)',rateHr:130000}],
     macroRows: [{name:'Major City (1M people)',rateHr:13000000},{name:'United States',rateHr:4680000000},{name:'Whole Planet (8.1B people)',rateHr:450000000000}]
   },
@@ -36,7 +36,7 @@ let userHourlyRate = 2;
 let activeCanvases = [];
 let pixelRatio = Math.max(1, window.devicePixelRatio || 1);
 
-function createTileCanvas(color, symbol, isMacro) {
+function createTileCanvas(color, symbol, isMacro, scaleLabel = '100K') {
   const tile = document.createElement('canvas');
   const w = isMacro ? 165 : 140, h = 75;
   tile.width = w; tile.height = h;
@@ -46,7 +46,7 @@ function createTileCanvas(color, symbol, isMacro) {
   ctx.strokeRect(10,11,w-20,h-22);
   ctx.fillStyle = '#fff'; ctx.font = isMacro ? 'bold 20px "PT Serif", serif' : '24px sans-serif';
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText(isMacro ? `${symbol} 1M` : symbol,w/2,h/2+1);
+  ctx.fillText(isMacro ? `${symbol} ${scaleLabel}` : symbol,w/2,h/2+1);
   return tile;
 }
 function formatRate(num,unit) {
@@ -64,7 +64,7 @@ function renderPage(metricKey) {
   container.innerHTML='';
   activeCanvases=[];
   const microTile=createTileCanvas(data.color,data.symbol,false);
-  const macroTile=createTileCanvas(data.color,data.symbol,true);
+  const macroTile=createTileCanvas(data.color,data.symbol,true,'100K');
   const borderUrl=`url(${microTile.toDataURL()})`;
   document.getElementById('topBorder').style.backgroundImage=borderUrl;
   document.getElementById('bottomBorder').style.backgroundImage=borderUrl;
@@ -94,9 +94,12 @@ function renderPage(metricKey) {
   const img=document.createElement('img'); img.src=macroTile.toDataURL(); img.className='mid-icon';
   mid.appendChild(img); mid.appendChild(document.createTextNode(` = ${data.macroLabel}`)); container.appendChild(mid);
   data.macroRows.forEach(row=>{
-    const pxPerSec=((row.rateHr/3600)/data.macroMultiplier)*macroTile.width;
-    const stackCount=row.name.toLowerCase().includes('whole planet') ? Math.max(1,Math.ceil(pxPerSec/900)) : 1;
-    addTrack(`${row.name} <span class="per-hour-count">(${formatRate(row.rateHr,data.unit)})</span>`,row.rateHr,macroTile,data.macroMultiplier,1,stackCount);
+    const isWholePlanet=row.name.toLowerCase().includes('whole planet');
+    const rowMultiplier=(metricKey==='water' && isWholePlanet) ? 1000000 : 100000;
+    const rowTile=(metricKey==='water' && isWholePlanet) ? createTileCanvas(data.color,data.symbol,true,'1M') : macroTile;
+    const pxPerSec=((row.rateHr/3600)/rowMultiplier)*rowTile.width;
+    const stackCount=isWholePlanet ? Math.max(1,Math.ceil(pxPerSec/900)) : 1;
+    addTrack(`${row.name} <span class="per-hour-count">(${formatRate(row.rateHr,data.unit)})</span>`,row.rateHr,rowTile,rowMultiplier,1,stackCount);
   });
   resizeCanvases();
 }
