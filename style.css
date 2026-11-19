@@ -129,6 +129,12 @@ body {
   color: var(--muted-text);
 }
 
+.track-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
 canvas {
   display: block;
   width: 100%;
