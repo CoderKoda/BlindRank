@@ -103,8 +103,14 @@ function animate(now) {
     track.offsetX=(track.offsetX+pxPerSec*dt)%tileW;
     ctx.clearRect(0,0,logicalWidth,75);
     if(pxPerSec>2200){
-      ctx.fillStyle=DATASETS[currentMetric].color; ctx.globalAlpha=0.85;
-      ctx.fillRect(0,5,logicalWidth,65); ctx.globalAlpha=1;
+      // Keep the macro tiles visible at extreme rates instead of flattening
+      // the whole track into a single solid-color stripe.
+      const pattern=ctx.createPattern(tile,'repeat');
+      ctx.save();
+      ctx.translate(track.offsetX,0);
+      ctx.fillStyle=pattern;
+      ctx.fillRect(-tileW,5,logicalWidth+tileW,65);
+      ctx.restore();
       return;
     }
     for(let x=track.offsetX-tileW;x<logicalWidth;x+=tileW){
