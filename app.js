@@ -1,31 +1,31 @@
 const DATASETS = {
   energy: {
-    unit: 'kWh', color: '#f5b014', symbol: '⚡', macroMultiplier: 250000,
-    macroLabel: '250,000 kWh (250 MWh)',
+    unit: 'kWh', color: '#f5b014', symbol: '⚡', macroMultiplier: 100000,
+    macroLabel: '100,000 kWh (100 MWh)',
     microRows: [{name:'Average Person (US)',rateHr:1.2},{name:'Average Household',rateHr:3.1},{name:'Small Town (10k people)',rateHr:12200}],
     macroRows: [{name:'Major City (1M people)',rateHr:1220000},{name:'United States',rateHr:468000000},{name:'Whole Planet (8.1B people)',rateHr:3240000000}]
   },
   water: {
-    unit: 'L', color: '#2b90d9', symbol: '💧', macroMultiplier: 250000,
-    macroLabel: '250,000 Liters',
+    unit: 'L', color: '#2b90d9', symbol: '💧', macroMultiplier: 100000,
+    macroLabel: '100,000 Liters',
     microRows: [{name:'Average Person (US)',rateHr:13},{name:'Average Household',rateHr:32},{name:'Small Town (10k people)',rateHr:130000}],
     macroRows: [{name:'Major City (1M people)',rateHr:13000000},{name:'United States',rateHr:4680000000},{name:'Whole Planet (8.1B people)',rateHr:450000000000}]
   },
   co2: {
-    unit: 'kg CO₂', color: '#555555', symbol: '☁️', macroMultiplier: 250000,
-    macroLabel: '250,000 kg (250 tonnes)',
+    unit: 'kg CO₂', color: '#555555', symbol: '☁️', macroMultiplier: 100000,
+    macroLabel: '100,000 kg (100 tonnes)',
     microRows: [{name:'Average Person (US)',rateHr:1.65},{name:'Average Household',rateHr:4.1},{name:'Small Town (10k people)',rateHr:16500}],
     macroRows: [{name:'Major City (1M people)',rateHr:1650000},{name:'United States',rateHr:540000000},{name:'Whole Planet (8.1B people)',rateHr:4210000000}]
   },
   food: {
-    unit: 'kg', color: '#d89b43', symbol: '🍎', macroMultiplier: 250000,
-    macroLabel: '250,000 kg (250 tonnes)',
+    unit: 'kg', color: '#d89b43', symbol: '🍎', macroMultiplier: 100000,
+    macroLabel: '100,000 kg (100 tonnes)',
     microRows: [{name:'Average Person (US)',rateHr:0.02},{name:'Average Household',rateHr:0.08},{name:'Small Town (10k people)',rateHr:200}],
     macroRows: [{name:'Major City (1M people)',rateHr:20000},{name:'United States (estimate)',rateHr:7000000},{name:'Whole Planet (estimate)',rateHr:120000000}]
   },
   waste: {
-    unit: 'kg', color: '#55a65c', symbol: '♻️', macroMultiplier: 250000,
-    macroLabel: '250,000 kg (250 tonnes)',
+    unit: 'kg', color: '#55a65c', symbol: '♻️', macroMultiplier: 100000,
+    macroLabel: '100,000 kg (100 tonnes)',
     microRows: [{name:'Average Person (US)',rateHr:0.09},{name:'Average Household',rateHr:0.37},{name:'Small Town (10k people)',rateHr:900}],
     macroRows: [{name:'Major City (1M people)',rateHr:90000},{name:'United States',rateHr:33000000},{name:'Whole Planet',rateHr:262000000}]
   }
@@ -46,7 +46,7 @@ function createTileCanvas(color, symbol, isMacro) {
   ctx.strokeRect(10,11,w-20,h-22);
   ctx.fillStyle = '#fff'; ctx.font = isMacro ? 'bold 20px "PT Serif", serif' : '24px sans-serif';
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText(isMacro ? `${symbol} 250K` : symbol,w/2,h/2+1);
+  ctx.fillText(isMacro ? `${symbol} 100K` : symbol,w/2,h/2+1);
   return tile;
 }
 function formatRate(num,unit) {
@@ -86,7 +86,7 @@ function renderPage(metricKey) {
   const mid=document.createElement('div'); mid.className='mid-explanation';
   const img=document.createElement('img'); img.src=macroTile.toDataURL(); img.className='mid-icon';
   mid.appendChild(img); mid.appendChild(document.createTextNode(` = ${data.macroLabel}`)); container.appendChild(mid);
-  data.macroRows.forEach((row,index)=>addTrack(`${row.name} <span class="per-hour-count">(${formatRate(row.rateHr,data.unit)})</span>`,row.rateHr,macroTile,data.macroMultiplier,index===0?5:1));
+  data.macroRows.forEach(row=>{\n    const pxPerSec=((row.rateHr/3600)/data.macroMultiplier)*macroTile.width;\n    const parts=Math.max(1,Math.ceil(pxPerSec/900));\n    for(let i=0;i<parts;i++){\n      const partRate=row.rateHr/parts;\n      const label=parts===1?row.name:`${row.name} (Part ${i+1}/${parts})`;\n      addTrack(`${label} <span class=\"per-hour-count\">(${formatRate(partRate,data.unit)})</span>`,partRate,macroTile,data.macroMultiplier);\n    }\n  });
   resizeCanvases();
 }
 function resizeCanvases() {
