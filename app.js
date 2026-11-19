@@ -86,7 +86,15 @@ function renderPage(metricKey) {
   const mid=document.createElement('div'); mid.className='mid-explanation';
   const img=document.createElement('img'); img.src=macroTile.toDataURL(); img.className='mid-icon';
   mid.appendChild(img); mid.appendChild(document.createTextNode(` = ${data.macroLabel}`)); container.appendChild(mid);
-  data.macroRows.forEach(row=>{\n    const pxPerSec=((row.rateHr/3600)/data.macroMultiplier)*macroTile.width;\n    const parts=Math.max(1,Math.ceil(pxPerSec/900));\n    for(let i=0;i<parts;i++){\n      const partRate=row.rateHr/parts;\n      const label=parts===1?row.name:`${row.name} (Part ${i+1}/${parts})`;\n      addTrack(`${label} <span class=\"per-hour-count\">(${formatRate(partRate,data.unit)})</span>`,partRate,macroTile,data.macroMultiplier);\n    }\n  });
+  data.macroRows.forEach(row=>{
+    const pxPerSec=((row.rateHr/3600)/data.macroMultiplier)*macroTile.width;
+    const parts=Math.max(1,Math.ceil(pxPerSec/900));
+    for(let i=0;i<parts;i++){
+      const partRate=row.rateHr/parts;
+      const label=parts===1?row.name:`${row.name} (Part ${i+1}/${parts})`;
+      addTrack(`${label} <span class="per-hour-count">(${formatRate(partRate,data.unit)})</span>`,partRate,macroTile,data.macroMultiplier);
+    }
+  });
   resizeCanvases();
 }
 function resizeCanvases() {
