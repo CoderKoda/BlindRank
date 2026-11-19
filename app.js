@@ -89,9 +89,10 @@ function renderPage(metricKey) {
     const isSmallTownWater=metricKey==='water' && row.name.toLowerCase().includes('small town');
     const rowTile=isSmallTownWater ? smallTownWaterTile : microTile;
     const rowMultiplier=isSmallTownWater ? 10000 : 1;
-    const pxPerSec=(row.rateHr/3600/rowMultiplier)*rowTile.width;
+    const visualSpeed=isSmallTownWater ? 1000 : 1;
+    const pxPerSec=(row.rateHr/3600/rowMultiplier)*rowTile.width*visualSpeed;
     const stackCount=Math.max(1,Math.ceil(pxPerSec/900));
-    addTrack(`${row.name} <span class="per-hour-count">(${formatRate(row.rateHr,data.unit)})</span>`,row.rateHr,rowTile,rowMultiplier,1,stackCount);
+    addTrack(`${row.name} <span class="per-hour-count">(${formatRate(row.rateHr,data.unit)})</span>`,row.rateHr,rowTile,rowMultiplier,visualSpeed,stackCount);
   });
   const userTrack=addTrack(`<div class="user-row">Your Hourly Usage: <input type="number" min="0" value="${userHourlyRate}" class="hour-input" id="userInput"> <span class="per-hour-count">${data.unit}/hr</span></div>`,userHourlyRate,microTile,1);
   document.getElementById('userInput').addEventListener('input',e=>{
