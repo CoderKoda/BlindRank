@@ -345,12 +345,6 @@ canvas {
   margin-bottom: 16px;
 }
 
-.about-links {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-top: 22px;
-}
 
 .home-footer {
   text-align: center;
