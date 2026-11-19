@@ -24,8 +24,8 @@ const DATASETS = {
     macroRows: [{name:'Major City (1M people)',rateHr:20000},{name:'United States (estimate)',rateHr:7000000},{name:'Whole Planet (estimate)',rateHr:120000000}]
   },
   waste: {
-    unit: 'kg', color: '#55a65c', symbol: '♻️', macroMultiplier: 1e6,
-    macroLabel: '1,000,000 kg (1,000 tonnes)',
+    unit: 'kg', color: '#55a65c', symbol: '♻️', macroMultiplier: 250000,
+    macroLabel: '250,000 kg (250 tonnes)',
     microRows: [{name:'Average Person (US)',rateHr:0.09},{name:'Average Household',rateHr:0.37},{name:'Small Town (10k people)',rateHr:900}],
     macroRows: [{name:'Major City (1M people)',rateHr:90000},{name:'United States',rateHr:33000000},{name:'Whole Planet',rateHr:262000000}]
   }
