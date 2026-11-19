@@ -68,14 +68,21 @@ function renderPage(metricKey) {
   const borderUrl=`url(${microTile.toDataURL()})`;
   document.getElementById('topBorder').style.backgroundImage=borderUrl;
   document.getElementById('bottomBorder').style.backgroundImage=borderUrl;
-  function addTrack(labelHtml,rateHr,tile,unitValue,visualSpeed=1) {
+  function addTrack(labelHtml,rateHr,tile,unitValue,visualSpeed=1,stackCount=1) {
     const desc=document.createElement('div');
     desc.className='description'; desc.innerHTML=labelHtml; container.appendChild(desc);
-    const canvas=document.createElement('canvas');
-    canvas.style.width='100%'; canvas.style.height='75px';
-    container.appendChild(canvas);
-    const track={canvas,ctx:canvas.getContext('2d'),tile,rateHr,unitValue,visualSpeed,offsetX:0,logicalWidth:0};
-    activeCanvases.push(track); return track;
+    const stack=document.createElement('div');
+    stack.className='track-stack';
+    container.appendChild(stack);
+    const tracks=[];
+    for(let i=0;i<stackCount;i++){
+      const canvas=document.createElement('canvas');
+      canvas.style.width='100%'; canvas.style.height='75px';
+      stack.appendChild(canvas);
+      const track={canvas,ctx:canvas.getContext('2d'),tile,rateHr:rateHr/stackCount,unitValue,visualSpeed,offsetX:0,logicalWidth:0};
+      activeCanvases.push(track); tracks.push(track);
+    }
+    return tracks[0];
   }
   data.microRows.forEach(row=>addTrack(`${row.name} <span class="per-hour-count">(${formatRate(row.rateHr,data.unit)})</span>`,row.rateHr,microTile,1));
   const userTrack=addTrack(`<div class="user-row">Your Hourly Usage: <input type="number" min="0" value="${userHourlyRate}" class="hour-input" id="userInput"> <span class="per-hour-count">${data.unit}/hr</span></div>`,userHourlyRate,microTile,1);
@@ -87,7 +94,9 @@ function renderPage(metricKey) {
   const img=document.createElement('img'); img.src=macroTile.toDataURL(); img.className='mid-icon';
   mid.appendChild(img); mid.appendChild(document.createTextNode(` = ${data.macroLabel}`)); container.appendChild(mid);
   data.macroRows.forEach(row=>{
-    addTrack(`${row.name} <span class="per-hour-count">(${formatRate(row.rateHr,data.unit)})</span>`,row.rateHr,macroTile,data.macroMultiplier);
+    const pxPerSec=((row.rateHr/3600)/data.macroMultiplier)*macroTile.width;
+    const stackCount=Math.max(1,Math.ceil(pxPerSec/900));
+    addTrack(`${row.name} <span class="per-hour-count">(${formatRate(row.rateHr,data.unit)})</span>`,row.rateHr,macroTile,data.macroMultiplier,1,stackCount);
   });
   resizeCanvases();
 }
