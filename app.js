@@ -49,10 +49,24 @@ const DATASETS = {
       { name: 'United States', rateHr: 540000000 },
       { name: 'Whole Planet (8.1B people)', rateHr: 4210000000 }
     ]
+  },
+  waste: {
+    unit: 'kg', color: '#55a65c', symbol: '♻️', macroMultiplier: 1000000,
+    macroLabel: '1,000,000 kg (1,000 tonnes)',
+    microRows: [
+      { name: 'Average Person (US)', rateHr: 0.09 },
+      { name: 'Average Household', rateHr: 0.37 },
+      { name: 'Small Town (10k people)', rateHr: 900 }
+    ],
+    macroRows: [
+      { name: 'Major City (1M people)', rateHr: 90000 },
+      { name: 'United States', rateHr: 33000000 },
+      { name: 'Whole Planet', rateHr: 262000000 }
+    ]
   }
 };
 
-let currentMetric = 'energy';
+let currentMetric = document.body.dataset.metric || 'energy';
 let userHourlyRate = 2;
 let activeCanvases = [];
 
@@ -167,7 +181,7 @@ function renderPage(metricKey) {
 
 function resizeCanvases() {
   activeCanvases.forEach(t => {
-    t.canvas.width = window.innerWidth;
+    const dpr = Math.max(1, window.devicePixelRatio || 1);\n    t.logicalWidth = window.innerWidth;\n    t.canvas.width = Math.round(t.logicalWidth * dpr);\n    t.canvas.height = Math.round(75 * dpr);\n    t.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   });
 }
 window.addEventListener('resize', resizeCanvases);
@@ -179,14 +193,14 @@ function animate(now) {
 
   activeCanvases.forEach(track => {
     const { ctx, canvas, tile, rateHr, unitValue } = track;
-    const tileW = tile.width;
+    const tileW = tile.width / Math.max(1, window.devicePixelRatio || 1);
 
     const tilesPerSec = (rateHr / 3600) / unitValue;
     const pxPerSec = tilesPerSec * tileW;
 
     track.offsetX = (track.offsetX + pxPerSec * dt) % tileW;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, track.logicalWidth, 75);
 
     if (pxPerSec > 2200) {
       ctx.fillStyle = DATASETS[currentMetric].color;
@@ -211,5 +225,5 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
   });
 });
 
-renderPage('energy');
+renderPage(currentMetric);
 requestAnimationFrame(animate);
