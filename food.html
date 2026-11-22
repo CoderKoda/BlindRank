@@ -1,10 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Food Waste - Consuming Earth</title>
+  <link href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
 </head>
-<body>
-
+<body data-metric="food">
+  <div class="border-strip" id="topBorder"></div>
+  <div class="title-slide">
+    <div class="title">Wasting Food</div>
+    <div class="credit">Inspired by Neal Agarwal’s Printing Money</div>
+    <nav class="metric-tabs">
+      <a href="index.html" class="tab-btn home-tab">⌂ Home</a>
+      <a href="energy.html" class="tab-btn">⚡ Energy</a>
+      <a href="water.html" class="tab-btn">💧 Water</a>
+      <a href="co2.html" class="tab-btn">☁️ CO₂ Emissions</a>
+      <a href="waste.html" class="tab-btn">♻️ Waste</a>
+      <a href="food.html" class="tab-btn active">🍎 Food Waste</a>
+    </nav>
+  </div>
+  <div class="container" id="stripsContainer"></div>
+  <div class="border-strip" id="bottomBorder"></div>
+  <script src="app.js"></script>
 </body>
 </html>
