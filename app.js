@@ -65,6 +65,7 @@ function renderPage(metricKey) {
   activeCanvases=[];
   const microTile=createTileCanvas(data.color,data.symbol,false);
   const smallTownWaterTile=(metricKey==='water') ? createTileCanvas(data.color,data.symbol,true,'10K') : microTile;
+  const smallTownFoodTile=(metricKey==='food') ? createTileCanvas(data.color,data.symbol,true,'10 kg') : microTile;
   const macroTile=createTileCanvas(data.color,data.symbol,true,metricKey==='waste' ? '10K' : '100K');
   const borderUrl=`url(${microTile.toDataURL()})`;
   document.getElementById('topBorder').style.backgroundImage=borderUrl;
@@ -88,9 +89,11 @@ function renderPage(metricKey) {
   // One shared visual multiplier per category keeps all micro rows in proportion.
   const microVisualMultiplier={energy:1000,water:1000,co2:1000,food:10000,waste:1000}[metricKey]||1;
   data.microRows.forEach(row=>{
-    const isSmallTownWater=metricKey==='water' && row.name.toLowerCase().includes('small town');
-    const rowTile=isSmallTownWater ? smallTownWaterTile : microTile;
-    const rowMultiplier=isSmallTownWater ? 10000 : 1;
+    const isSmallTown=row.name.toLowerCase().includes('small town');
+    const isSmallTownWater=metricKey==='water' && isSmallTown;
+    const isSmallTownFood=metricKey==='food' && isSmallTown;
+    const rowTile=isSmallTownWater ? smallTownWaterTile : (isSmallTownFood ? smallTownFoodTile : microTile);
+    const rowMultiplier=isSmallTownWater ? 10000 : (isSmallTownFood ? 10 : 1);
     const visualSpeed=microVisualMultiplier;
     const pxPerSec=(row.rateHr/3600/rowMultiplier)*rowTile.width*visualSpeed;
     const stackCount=Math.max(1,Math.ceil(pxPerSec/900));
