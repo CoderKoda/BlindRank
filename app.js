@@ -64,10 +64,38 @@ function renderPage(metricKey) {
   container.innerHTML='';
   activeCanvases=[];
   const microTile=createTileCanvas(data.color,data.symbol,false);
-  // Small-town tiles group larger quantities so fast rows remain legible.
-  const smallTownGrouping={energy:10000,water:10000,co2:10000,food:1000,waste:1000}[metricKey]||1;
-  const smallTownLabel=smallTownGrouping>=1000 ? `${smallTownGrouping/1000}K` : String(smallTownGrouping);
-  const smallTownTile=createTileCanvas(data.color,data.symbol,true,smallTownLabel);
+  // Use one animation multiplier per category; tile grouping carries the scale.
+  const scaleConfig={
+    energy:{visualSpeed:1000,groups:{person:1,household:1,smallTown:10000,majorCity:100000,unitedStates:10000000,wholePlanet:10000000}},
+    water:{visualSpeed:100,groups:{person:1,household:1,smallTown:10000,majorCity:100000,unitedStates:10000000,wholePlanet:10000000}},
+    co2:{visualSpeed:1000,groups:{person:1,household:1,smallTown:10000,majorCity:100000,unitedStates:10000000,wholePlanet:10000000}},
+    food:{visualSpeed:1000,groups:{person:0.01,household:0.01,smallTown:100,majorCity:10000,unitedStates:1000000,wholePlanet:1000000}},
+    waste:{visualSpeed:1000,groups:{person:0.01,household:0.01,smallTown:100,majorCity:10000,unitedStates:1000000,wholePlanet:1000000}}
+  }[metricKey];
+  function groupingForRow(name){
+    const n=name.toLowerCase(), g=scaleConfig.groups;
+    if(n.includes('average person'))return g.person;
+    if(n.includes('average household'))return g.household;
+    if(n.includes('small town'))return g.smallTown;
+    if(n.includes('major city'))return g.majorCity;
+    if(n.includes('united states'))return g.unitedStates;
+    if(n.includes('whole planet'))return g.wholePlanet;
+    return 1;
+  }
+  function groupingLabel(amount){
+    if(amount<1)return String(amount*1000)+' g';
+    if(amount>=1e9)return String(amount/1e9)+'B';
+    if(amount>=1e6)return String(amount/1e6)+'M';
+    if(amount>=1e3)return String(amount/1e3)+'K';
+    return String(amount);
+  }
+  const tileCache=new Map([[1,microTile]]);
+  function tileForGrouping(amount){
+    if(!tileCache.has(amount)){
+      tileCache.set(amount,createTileCanvas(data.color,data.symbol,true,groupingLabel(amount)));
+    }
+    return tileCache.get(amount);
+  }
   const macroTile=createTileCanvas(data.color,data.symbol,true,metricKey==='waste' ? '10K' : '100K');
   const borderUrl=`url(${microTile.toDataURL()})`;
   document.getElementById('topBorder').style.backgroundImage=borderUrl;
@@ -88,33 +116,26 @@ function renderPage(metricKey) {
     }
     return tracks[0];
   }
-  // One shared visual multiplier per category keeps all micro rows in proportion.
-  const microVisualMultiplier={energy:1000,water:1000,co2:1000,food:10000,waste:1000}[metricKey]||1;
-  data.microRows.forEach(row=>{
-    const isSmallTown=row.name.toLowerCase().includes('small town');
-    const rowTile=isSmallTown ? smallTownTile : microTile;
-    const rowMultiplier=isSmallTown ? smallTownGrouping : 1;
-    const visualSpeed=microVisualMultiplier;
+  function addScaledRow(row){
+    const rowMultiplier=groupingForRow(row.name);
+    const rowTile=tileForGrouping(rowMultiplier);
+    const visualSpeed=scaleConfig.visualSpeed;
     const pxPerSec=(row.rateHr/3600/rowMultiplier)*rowTile.width*visualSpeed;
     const stackCount=Math.max(1,Math.ceil(pxPerSec/900));
-    addTrack(`${row.name} <span class="per-hour-count">(${formatRate(row.rateHr,data.unit)})</span>`,row.rateHr,rowTile,rowMultiplier,visualSpeed,stackCount);
-  });
-  const userTrack=addTrack(`<div class="user-row">Your Hourly Usage: <input type="number" min="0" value="${userHourlyRate}" class="hour-input" id="userInput"> <span class="per-hour-count">${data.unit}/hr</span></div>`,userHourlyRate,microTile,1);
+    addTrack(row.name+' <span class="per-hour-count">('+formatRate(row.rateHr,data.unit)+')</span>',row.rateHr,rowTile,rowMultiplier,visualSpeed,stackCount);
+  }
+  data.microRows.forEach(addScaledRow);
+  const personGrouping=scaleConfig.groups.person;
+  const userTile=tileForGrouping(personGrouping);
+  const userTrack=addTrack('<div class="user-row">Your Hourly Usage: <input type="number" min="0" value="'+userHourlyRate+'" class="hour-input" id="userInput"> <span class="per-hour-count">'+data.unit+'/hr</span></div>',userHourlyRate,userTile,personGrouping,scaleConfig.visualSpeed);
   document.getElementById('userInput').addEventListener('input',e=>{
     userHourlyRate=Math.max(0,parseFloat(e.target.value)||0);
     userTrack.rateHr=userHourlyRate;
   });
   const mid=document.createElement('div'); mid.className='mid-explanation';
   const img=document.createElement('img'); img.src=macroTile.toDataURL(); img.className='mid-icon';
-  mid.appendChild(img); mid.appendChild(document.createTextNode(` = ${data.macroLabel}`)); container.appendChild(mid);
-  data.macroRows.forEach(row=>{
-    const isWholePlanet=row.name.toLowerCase().includes('whole planet');
-    const rowMultiplier=(metricKey==='water' && isWholePlanet) ? 1000000 : (metricKey==='waste' ? 10000 : 100000);
-    const rowTile=(metricKey==='water' && isWholePlanet) ? createTileCanvas(data.color,data.symbol,true,'1M') : macroTile;
-    const pxPerSec=((row.rateHr/3600)/rowMultiplier)*rowTile.width;
-    const stackCount=Math.max(1,Math.ceil(pxPerSec/900));
-    addTrack(`${row.name} <span class="per-hour-count">(${formatRate(row.rateHr,data.unit)})</span>`,row.rateHr,rowTile,rowMultiplier,1,stackCount);
-  });
+  mid.appendChild(img); mid.appendChild(document.createTextNode(' = '+data.macroLabel)); container.appendChild(mid);
+  data.macroRows.forEach(addScaledRow);
   resizeCanvases();
 }
 function resizeCanvases() {
