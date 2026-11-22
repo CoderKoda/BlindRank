@@ -66,11 +66,11 @@ function renderPage(metricKey) {
   const microTile=createTileCanvas(data.color,data.symbol,false);
   // Use one animation multiplier per category; tile grouping carries the scale.
   const scaleConfig={
-    energy:{visualSpeed:1000,groups:{person:1,household:1,smallTown:10000,majorCity:100000,unitedStates:10000000,wholePlanet:10000000}},
-    water:{visualSpeed:100,groups:{person:1,household:1,smallTown:10000,majorCity:100000,unitedStates:10000000,wholePlanet:100000000}},
-    co2:{visualSpeed:1000,groups:{person:1,household:1,smallTown:10000,majorCity:100000,unitedStates:10000000,wholePlanet:10000000}},
-    food:{visualSpeed:1000,groups:{person:0.01,household:0.01,smallTown:100,majorCity:10000,unitedStates:1000000,wholePlanet:1000000}},
-    waste:{visualSpeed:1000,groups:{person:0.01,household:0.01,smallTown:100,majorCity:10000,unitedStates:1000000,wholePlanet:1000000}}
+    energy:{visualSpeed:1000,groups:{person:1,household:1,smallTown:1000,majorCity:10000,unitedStates:1000000,wholePlanet:5000000}},
+    water:{visualSpeed:100,groups:{person:1,household:1,smallTown:1000,majorCity:100000,unitedStates:10000000,wholePlanet:100000000}},
+    co2:{visualSpeed:1000,groups:{person:1,household:1,smallTown:1000,majorCity:100000,unitedStates:10000000,wholePlanet:10000000}},
+    food:{visualSpeed:500,groups:{person:0.01,household:0.01,smallTown:10,majorCity:1000,unitedStates:100000,wholePlanet:100000}},
+    waste:{visualSpeed:100,groups:{person:0.01,household:0.01,smallTown:10,majorCity:1000,unitedStates:100000,wholePlanet:100000}}
   }[metricKey];
   function groupingForRow(name){
     const n=name.toLowerCase(), g=scaleConfig.groups;
