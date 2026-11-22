@@ -90,7 +90,7 @@ function renderPage(metricKey) {
     const rowTile=isSmallTownWater ? smallTownWaterTile : microTile;
     const rowMultiplier=isSmallTownWater ? 10000 : 1;
     const isPersonOrHousehold=/average person|average household/i.test(row.name);
-    const visualSpeed=(isSmallTownWater || isPersonOrHousehold) ? 1000 : 1;
+    const visualSpeed=isSmallTownWater ? 1000 : (isPersonOrHousehold ? (metricKey==='food' ? 10000 : 1000) : 1);
     const pxPerSec=(row.rateHr/3600/rowMultiplier)*rowTile.width*visualSpeed;
     const stackCount=Math.max(1,Math.ceil(pxPerSec/900));
     addTrack(`${row.name} <span class="per-hour-count">(${formatRate(row.rateHr,data.unit)})</span>`,row.rateHr,rowTile,rowMultiplier,visualSpeed,stackCount);
