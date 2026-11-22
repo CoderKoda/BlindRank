@@ -11,7 +11,7 @@
 * **Neal.fun Visual Mechanic:** **"The Carbon Cloud / Tree Counter"**
   * As the user scrolls down through the 6 tiers (or uses a sticky tier-switcher bar), visual units accumulate on screen.
   * **Base Visual Unit:** $1\text{ metric ton of CO}_2$ represented by a dark gray cloud icon (or the number of mature trees needed to absorb it for a year: $\approx 45\text{ trees}$).
-  * For smaller tiers (Person/Household), individual icons render cleanly in a grid. For massive tiers (City/Country/World), the mechanic transitions into a high-speed visual stream, stacked mega-blocks, or an interactive scroll-rate counter (just like *Printing Money* speeds up as numbers grow).
+  * For smaller tiers (Person/Household), individual icons render clenly in a grid. For massive tiers (City/Country/World), the mechanic transitions into a high-speed visual stream, stacked mega-blocks, or an interactive scroll-rate counter (just like *Printing Money* speeds up as numbers grow).
 
 ---
 
