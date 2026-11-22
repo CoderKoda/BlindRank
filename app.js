@@ -85,12 +85,13 @@ function renderPage(metricKey) {
     }
     return tracks[0];
   }
+  // One shared visual multiplier per category keeps all micro rows in proportion.
+  const microVisualMultiplier={energy:1000,water:1000,co2:1000,food:10000,waste:1000}[metricKey]||1;
   data.microRows.forEach(row=>{
     const isSmallTownWater=metricKey==='water' && row.name.toLowerCase().includes('small town');
     const rowTile=isSmallTownWater ? smallTownWaterTile : microTile;
     const rowMultiplier=isSmallTownWater ? 10000 : 1;
-    const isPersonOrHousehold=/average person|average household/i.test(row.name);
-    const visualSpeed=isSmallTownWater ? 1000 : (isPersonOrHousehold ? (metricKey==='food' ? 10000 : 1000) : 1);
+    const visualSpeed=microVisualMultiplier;
     const pxPerSec=(row.rateHr/3600/rowMultiplier)*rowTile.width*visualSpeed;
     const stackCount=Math.max(1,Math.ceil(pxPerSec/900));
     addTrack(`${row.name} <span class="per-hour-count">(${formatRate(row.rateHr,data.unit)})</span>`,row.rateHr,rowTile,rowMultiplier,visualSpeed,stackCount);
