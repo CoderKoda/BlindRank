@@ -67,7 +67,7 @@ function renderPage(metricKey) {
   // Use one animation multiplier per category; tile grouping carries the scale.
   const scaleConfig={
     energy:{visualSpeed:1000,groups:{person:1,household:1,smallTown:10000,majorCity:100000,unitedStates:10000000,wholePlanet:10000000}},
-    water:{visualSpeed:100,groups:{person:1,household:1,smallTown:10000,majorCity:100000,unitedStates:10000000,wholePlanet:10000000}},
+    water:{visualSpeed:100,groups:{person:1,household:1,smallTown:10000,majorCity:100000,unitedStates:10000000,wholePlanet:100000000}},
     co2:{visualSpeed:1000,groups:{person:1,household:1,smallTown:10000,majorCity:100000,unitedStates:10000000,wholePlanet:10000000}},
     food:{visualSpeed:1000,groups:{person:0.01,household:0.01,smallTown:100,majorCity:10000,unitedStates:1000000,wholePlanet:1000000}},
     waste:{visualSpeed:1000,groups:{person:0.01,household:0.01,smallTown:100,majorCity:10000,unitedStates:1000000,wholePlanet:1000000}}
@@ -119,7 +119,8 @@ function renderPage(metricKey) {
   function addScaledRow(row){
     const rowMultiplier=groupingForRow(row.name);
     const rowTile=tileForGrouping(rowMultiplier);
-    const visualSpeed=scaleConfig.visualSpeed;
+    // Normalize tile widths so equal tile-throughput always has equal pixel speed.
+    const visualSpeed=scaleConfig.visualSpeed*microTile.width/rowTile.width;
     const pxPerSec=(row.rateHr/3600/rowMultiplier)*rowTile.width*visualSpeed;
     const stackCount=Math.max(1,Math.ceil(pxPerSec/900));
     addTrack(row.name+' <span class="per-hour-count">('+formatRate(row.rateHr,data.unit)+')</span>',row.rateHr,rowTile,rowMultiplier,visualSpeed,stackCount);
@@ -127,7 +128,8 @@ function renderPage(metricKey) {
   data.microRows.forEach(addScaledRow);
   const personGrouping=scaleConfig.groups.person;
   const userTile=tileForGrouping(personGrouping);
-  const userTrack=addTrack('<div class="user-row">Your Hourly Usage: <input type="number" min="0" value="'+userHourlyRate+'" class="hour-input" id="userInput"> <span class="per-hour-count">'+data.unit+'/hr</span></div>',userHourlyRate,userTile,personGrouping,scaleConfig.visualSpeed);
+  const userSpeed=scaleConfig.visualSpeed*microTile.width/userTile.width;
+  const userTrack=addTrack('<div class="user-row">Your Hourly Usage: <input type="number" min="0" value="'+userHourlyRate+'" class="hour-input" id="userInput"> <span class="per-hour-count">'+data.unit+'/hr</span></div>',userHourlyRate,userTile,personGrouping,userSpeed);
   document.getElementById('userInput').addEventListener('input',e=>{
     userHourlyRate=Math.max(0,parseFloat(e.target.value)||0);
     userTrack.rateHr=userHourlyRate;
