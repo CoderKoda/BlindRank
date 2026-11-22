@@ -64,8 +64,10 @@ function renderPage(metricKey) {
   container.innerHTML='';
   activeCanvases=[];
   const microTile=createTileCanvas(data.color,data.symbol,false);
-  const smallTownWaterTile=(metricKey==='water') ? createTileCanvas(data.color,data.symbol,true,'10K') : microTile;
-  const smallTownFoodTile=(metricKey==='food') ? createTileCanvas(data.color,data.symbol,true,'10 kg') : microTile;
+  // Small-town tiles group larger quantities so fast rows remain legible.
+  const smallTownGrouping={energy:10000,water:10000,co2:10000,food:1000,waste:1000}[metricKey]||1;
+  const smallTownLabel=smallTownGrouping>=1000 ? `${smallTownGrouping/1000}K` : String(smallTownGrouping);
+  const smallTownTile=createTileCanvas(data.color,data.symbol,true,smallTownLabel);
   const macroTile=createTileCanvas(data.color,data.symbol,true,metricKey==='waste' ? '10K' : '100K');
   const borderUrl=`url(${microTile.toDataURL()})`;
   document.getElementById('topBorder').style.backgroundImage=borderUrl;
@@ -90,10 +92,8 @@ function renderPage(metricKey) {
   const microVisualMultiplier={energy:1000,water:1000,co2:1000,food:10000,waste:1000}[metricKey]||1;
   data.microRows.forEach(row=>{
     const isSmallTown=row.name.toLowerCase().includes('small town');
-    const isSmallTownWater=metricKey==='water' && isSmallTown;
-    const isSmallTownFood=metricKey==='food' && isSmallTown;
-    const rowTile=isSmallTownWater ? smallTownWaterTile : (isSmallTownFood ? smallTownFoodTile : microTile);
-    const rowMultiplier=isSmallTownWater ? 10000 : (isSmallTownFood ? 10 : 1);
+    const rowTile=isSmallTown ? smallTownTile : microTile;
+    const rowMultiplier=isSmallTown ? smallTownGrouping : 1;
     const visualSpeed=microVisualMultiplier;
     const pxPerSec=(row.rateHr/3600/rowMultiplier)*rowTile.width*visualSpeed;
     const stackCount=Math.max(1,Math.ceil(pxPerSec/900));
