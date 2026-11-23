@@ -85,12 +85,13 @@ function renderPage(metricKey) {
   activeCanvases=[];
   const microTile=createTileCanvas(data.color,data.symbol,false);
   // Each denomination is chosen so the larger population strips remain in proportion.
+  // Use only familiar denominations so row labels stay consistent across categories.
   const scaleConfig={
-    energy:{visualSpeed:1000,groups:{person:1,household:1,smallTown:1000,majorCity:10000,unitedStates:2000000,wholePlanet:10000000}},
-    water:{visualSpeed:100,groups:{person:1,household:1,smallTown:1000,majorCity:50000,unitedStates:15000000,wholePlanet:1000000000}},
-    co2:{visualSpeed:1000,groups:{person:1,household:1,smallTown:1000,majorCity:50000,unitedStates:15000000,wholePlanet:100000000}},
-    food:{visualSpeed:500,groups:{person:0.01,household:0.01,smallTown:20,majorCity:1800,unitedStates:600000,wholePlanet:10000000}},
-    waste:{visualSpeed:1000,groups:{person:0.1,household:0.1,smallTown:100,majorCity:5000,unitedStates:1500000,wholePlanet:10000000}}
+    energy:{visualSpeed:1000,groups:{person:1,household:1,smallTown:1000,majorCity:100000,unitedStates:25000000,wholePlanet:250000000}},
+    water:{visualSpeed:100,groups:{person:1,household:1,smallTown:1000,majorCity:50000,unitedStates:25000000,wholePlanet:5000000000}},
+    co2:{visualSpeed:1000,groups:{person:1,household:1,smallTown:1000,majorCity:100000,unitedStates:50000000,wholePlanet:1000000000}},
+    food:{visualSpeed:10000,groups:{person:1,household:1,smallTown:25,majorCity:2500,unitedStates:1000000,wholePlanet:10000000}},
+    waste:{visualSpeed:25000,groups:{person:1,household:1,smallTown:1000,majorCity:100000,unitedStates:25000000,wholePlanet:250000000}}
   }[metricKey];
   function groupingForRow(name){
     const n=name.toLowerCase(), g=scaleConfig.groups;
@@ -162,10 +163,18 @@ function renderPage(metricKey) {
   const userStack=document.createElement('div'); userStack.className='track-stack'; container.appendChild(userStack);
   let userTracks=[];
   function niceGrouping(value){
-    if(value===Infinity)return 1e308;
-    if(!Number.isFinite(value) || value<=0)return 1;
-    const power=Math.pow(10,Math.floor(Math.log10(value)));
-    const candidates=[1,2,5,10].map(step=>step*power);
+    if(!Number.isFinite(value) || value<=1)return 1;
+    // Standard sequence: 1, 2, 5, 10, 25, 50 ... then
+    // 1K, 2.5K, 5K, 10K, 25K ... at larger magnitudes.
+    const candidates=[1,2,5,10,25,50,100,250,500];
+    const maxExponent=Math.max(3,Math.min(300,Math.ceil(Math.log10(value)/3)*3+3));
+    for(let exponent=3;exponent<=maxExponent;exponent+=3){
+      const magnitude=Math.pow(10,exponent);
+      [1,2.5,5,10,25,50,100,250,500].forEach(step=>{
+        const candidate=step*magnitude;
+        if(Number.isFinite(candidate))candidates.push(candidate);
+      });
+    }
     return candidates.reduce((best,candidate)=>
       Math.abs(Math.log(candidate/value))<Math.abs(Math.log(best/value)) ? candidate : best
     ,candidates[0]);
