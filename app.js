@@ -116,7 +116,7 @@ function renderPage(metricKey) {
     }
     return tileCache.get(amount);
   }
-  const macroTile=createTileCanvas(data.color,data.symbol,true,metricKey==='waste' ? '10K' : '100K');
+  const macroTile=createTileCanvas(data.color,data.symbol,true,'100K');
   const borderUrl=`url(${microTile.toDataURL()})`;
   document.getElementById('topBorder').style.backgroundImage=borderUrl;
   document.getElementById('bottomBorder').style.backgroundImage=borderUrl;
