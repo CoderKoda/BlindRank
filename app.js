@@ -90,7 +90,7 @@ function renderPage(metricKey) {
     energy:{visualSpeed:1000,groups:{person:1,household:1,smallTown:1000,majorCity:100000,unitedStates:25000000,wholePlanet:250000000}},
     water:{visualSpeed:100,groups:{person:1,household:1,smallTown:1000,majorCity:50000,unitedStates:25000000,wholePlanet:5000000000}},
     co2:{visualSpeed:1000,groups:{person:1,household:1,smallTown:1000,majorCity:100000,unitedStates:50000000,wholePlanet:1000000000}},
-    food:{visualSpeed:10000,groups:{person:1,household:1,smallTown:25,majorCity:2500,unitedStates:1000000,wholePlanet:10000000}},
+    food:{visualSpeed:500,microVisualSpeed:50000,groups:{person:1,household:1,smallTown:25,majorCity:2500,unitedStates:1000000,wholePlanet:10000000}},
     waste:{visualSpeed:25000,groups:{person:1,household:1,smallTown:1000,majorCity:100000,unitedStates:25000000,wholePlanet:250000000}}
   }[metricKey];
   function groupingForRow(name){
@@ -144,7 +144,9 @@ function renderPage(metricKey) {
     const rowMultiplier=groupingForRow(row.name);
     const rowTile=tileForGrouping(rowMultiplier);
     // Normalize tile widths so the displayed pixel speed reflects rate / denomination.
-    const visualSpeed=scaleConfig.visualSpeed*microTile.width/rowTile.width;
+    const isFoodMicroRow=metricKey==='food' && /average (person|household)/i.test(row.name);
+    const baseVisualSpeed=isFoodMicroRow ? scaleConfig.microVisualSpeed : scaleConfig.visualSpeed;
+    const visualSpeed=baseVisualSpeed*microTile.width/rowTile.width;
     const pxPerSec=(row.rateHr/3600/rowMultiplier)*rowTile.width*visualSpeed;
     const stackCount=Math.max(1,Math.ceil(pxPerSec/900));
     addTrack(row.name+' <span class="per-hour-count">('+formatRate(row.rateHr,data.unit)+')</span>',row.rateHr,rowTile,rowMultiplier,visualSpeed,stackCount);
@@ -185,12 +187,13 @@ function renderPage(metricKey) {
     userTracks=[]; userStack.innerHTML='';
     const personGrouping=scaleConfig.groups.person;
     let userGrouping=personGrouping;
+    const userVisualSpeed=scaleConfig.microVisualSpeed || scaleConfig.visualSpeed;
     if((metricKey==='food' || metricKey==='waste') && rateHr>0){
-      const targetGrouping=rateHr*microTile.width*scaleConfig.visualSpeed/(3600*400);
+      const targetGrouping=rateHr*microTile.width*userVisualSpeed/(3600*400);
       userGrouping=Math.max(personGrouping,niceGrouping(targetGrouping));
     }
     const userTile=tileForGrouping(userGrouping);
-    const userSpeed=scaleConfig.visualSpeed*microTile.width/userTile.width;
+    const userSpeed=userVisualSpeed*microTile.width/userTile.width;
     const totalPxPerSec=(rateHr/3600/userGrouping)*userTile.width*userSpeed;
     const laneSpeedLimit=(metricKey==='food' || metricKey==='waste') ? 250 : 900;
     const stackCount=Math.max(1,Math.ceil(totalPxPerSec/laneSpeedLimit));
