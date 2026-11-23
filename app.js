@@ -89,7 +89,7 @@ function renderPage(metricKey) {
     energy:{visualSpeed:1000,groups:{person:1,household:1,smallTown:1000,majorCity:10000,unitedStates:2000000,wholePlanet:10000000}},
     water:{visualSpeed:100,groups:{person:1,household:1,smallTown:1000,majorCity:50000,unitedStates:15000000,wholePlanet:1000000000}},
     co2:{visualSpeed:1000,groups:{person:1,household:1,smallTown:1000,majorCity:50000,unitedStates:15000000,wholePlanet:100000000}},
-    food:{visualSpeed:500,groups:{person:0.01,household:0.01,smallTown:20,majorCity:2000,unitedStates:600000,wholePlanet:10000000}},
+    food:{visualSpeed:500,groups:{person:0.01,household:0.01,smallTown:20,majorCity:1800,unitedStates:600000,wholePlanet:10000000}},
     waste:{visualSpeed:1000,groups:{person:0.1,household:0.1,smallTown:100,majorCity:5000,unitedStates:1500000,wholePlanet:10000000}}
   }[metricKey];
   function groupingForRow(name){
