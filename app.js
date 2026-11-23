@@ -162,6 +162,7 @@ function renderPage(metricKey) {
   const userStack=document.createElement('div'); userStack.className='track-stack'; container.appendChild(userStack);
   let userTracks=[];
   function niceGrouping(value){
+    if(value===Infinity)return 1e308;
     if(!Number.isFinite(value) || value<=0)return 1;
     const power=Math.pow(10,Math.floor(Math.log10(value)));
     const candidates=[1,2,5,10].map(step=>step*power);
