@@ -188,7 +188,9 @@ function renderPage(metricKey) {
     const personGrouping=scaleConfig.groups.person;
     let userGrouping=personGrouping;
     const userVisualSpeed=scaleConfig.microVisualSpeed || scaleConfig.visualSpeed;
-    if((metricKey==='food' || metricKey==='waste') && rateHr>0){
+    // Automatically choose a suitable denomination for every category's
+    // custom usage strip, not just Food Waste and Producing Waste.
+    if(rateHr>0){
       const targetGrouping=rateHr*microTile.width*userVisualSpeed/(3600*400);
       userGrouping=Math.max(personGrouping,niceGrouping(targetGrouping));
     }
