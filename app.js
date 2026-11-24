@@ -197,7 +197,7 @@ function renderPage(metricKey) {
     const userTile=tileForGrouping(userGrouping);
     const userSpeed=userVisualSpeed*microTile.width/userTile.width;
     const totalPxPerSec=(rateHr/3600/userGrouping)*userTile.width*userSpeed;
-    const laneSpeedLimit=(metricKey==='food' || metricKey==='waste') ? 250 : 900;
+    const laneSpeedLimit=250; // Keep every category's custom usage lanes at the same readable speed.
     const stackCount=Math.max(1,Math.ceil(totalPxPerSec/laneSpeedLimit));
     userTracks=createLaneCanvases(userStack,rateHr,userTile,userGrouping,userSpeed,stackCount);
     resizeCanvases();
