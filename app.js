@@ -1,174 +1,174 @@
-  const DATASETS = {
-    energy: {
+const DATASETS = {
+  energy: {
     unit: 'kWh',
     color: '#f5b014',
     symbol: '⚡',
     macroMultiplier: 100000,
     macroLabel: '100,000 kWh (100 MWh)',
-      microRows: [
-        {
+    microRows: [
+      {
         name: 'Average Person (US)',
         rateHr: 1.2
       },
-        {
+      {
         name: 'Average Household',
         rateHr: 3.1
       },
-        {
+      {
         name: 'Small Town (10k people)',
         rateHr: 12200
       }
     ],
-      macroRows: [
-        {
+    macroRows: [
+      {
         name: 'Major City (1M people)',
         rateHr: 1220000
       },
-        {
+      {
         name: 'United States',
         rateHr: 468000000
       },
-        {
+      {
         name: 'Whole Planet (8.1B people)',
         rateHr: 3240000000
       }
     ]
   },
-    water: {
+  water: {
     unit: 'L',
     color: '#2b90d9',
     symbol: '💧',
     macroMultiplier: 100000,
     macroLabel: '100,000 Liters',
-      microRows: [
-        {
+    microRows: [
+      {
         name: 'Average Person (US)',
         rateHr: 13
       },
-        {
+      {
         name: 'Average Household',
         rateHr: 32
       },
-        {
+      {
         name: 'Small Town (10k people)',
         rateHr: 130000
       }
     ],
-      macroRows: [
-        {
+    macroRows: [
+      {
         name: 'Major City (1M people)',
         rateHr: 13000000
       },
-        {
+      {
         name: 'United States',
         rateHr: 4680000000
       },
-        {
+      {
         name: 'Whole Planet (8.1B people)',
         rateHr: 450000000000
       }
     ]
   },
-    co2: {
+  co2: {
     unit: 'kg CO₂',
     color: '#555555',
     symbol: '☁️',
     macroMultiplier: 100000,
     macroLabel: '100,000 kg (100 tonnes)',
-      microRows: [
-        {
+    microRows: [
+      {
         name: 'Average Person (US)',
         rateHr: 1.65
       },
-        {
+      {
         name: 'Average Household',
         rateHr: 4.1
       },
-        {
+      {
         name: 'Small Town (10k people)',
         rateHr: 16500
       }
     ],
-      macroRows: [
-        {
+    macroRows: [
+      {
         name: 'Major City (1M people)',
         rateHr: 1650000
       },
-        {
+      {
         name: 'United States',
         rateHr: 540000000
       },
-        {
+      {
         name: 'Whole Planet (8.1B people)',
         rateHr: 4210000000
       }
     ]
   },
-    food: {
+  food: {
     unit: 'kg',
     color: '#d89b43',
     symbol: '🍎',
     macroMultiplier: 100000,
     macroLabel: '100,000 kg (100 tonnes)',
-      microRows: [
-        {
+    microRows: [
+      {
         name: 'Average Person (US)',
         rateHr: 0.02
       },
-        {
+      {
         name: 'Average Household',
         rateHr: 0.08
       },
-        {
+      {
         name: 'Small Town (10k people)',
         rateHr: 200
       }
     ],
-      macroRows: [
-        {
+    macroRows: [
+      {
         name: 'Major City (1M people)',
         rateHr: 20000
       },
-        {
+      {
         name: 'United States (estimate)',
         rateHr: 7000000
       },
-        {
+      {
         name: 'Whole Planet (estimate)',
         rateHr: 120000000
       }
     ]
   },
-    waste: {
+  waste: {
     unit: 'kg',
     color: '#55a65c',
     symbol: '♻️',
     macroMultiplier: 100000,
     macroLabel: '100,000 kg (100 tonnes)',
-      microRows: [
-        {
+    microRows: [
+      {
         name: 'Average Person (US)',
         rateHr: 0.09
       },
-        {
+      {
         name: 'Average Household',
         rateHr: 0.37
       },
-        {
+      {
         name: 'Small Town (10k people)',
         rateHr: 900
       }
     ],
-      macroRows: [
-        {
+    macroRows: [
+      {
         name: 'Major City (1M people)',
         rateHr: 90000
       },
-        {
+      {
         name: 'United States',
         rateHr: 33000000
       },
-        {
+      {
         name: 'Whole Planet',
         rateHr: 262000000
       }
@@ -176,39 +176,39 @@
   }
 };
 let currentMetric = document.body.dataset.metric || 'energy';
-  const USER_RATE_DEFAULTS = {
+const USER_RATE_DEFAULTS = {
   energy: 2,
   water: 2,
   co2: 2,
   food: 0.02,
   waste: 0.09
 };
-  function loadUserRate(metricKey) {
-    try {
+function loadUserRate(metricKey) {
+  try {
     const saved = window.sessionStorage.getItem('consuming-earth:user-rate:' + metricKey);
-      if (saved !== null) {
+    if (saved !== null) {
       const value = Number(saved);
       if (Number.isFinite(value) && value >= 0)return value;
     }
-    }catch (error) {
+  } catch (error) {
     // Continue with the category default when session storage is unavailable.
   }
   return USER_RATE_DEFAULTS[metricKey]
   ?? 0;
 }
 
-  function saveUserRate(metricKey, value) {
-    try {
+function saveUserRate(metricKey, value) {
+  try {
     window.sessionStorage.setItem('consuming-earth:user-rate:' + metricKey, String(value));
-    }catch (error) {
+  } catch (error) {
     // The input still works for the current page if session storage is unavailable.
   }
 }
 let userHourlyRate = loadUserRate(currentMetric);
-  let activeCanvases = [
+let activeCanvases = [
 ];
 let pixelRatio = Math.max(1, window.devicePixelRatio || 1);
-  function createTileCanvas(color, symbol, isMacro, scaleLabel = '100K') {
+function createTileCanvas(color, symbol, isMacro, scaleLabel = '100K') {
   const tile = document.createElement('canvas');
   const w = isMacro ? 165: 140,
   h = 75;
@@ -228,29 +228,29 @@ let pixelRatio = Math.max(1, window.devicePixelRatio || 1);
   return tile;
 }
 
-  function formatRate(num, unit) {
+function formatRate(num, unit) {
   if (num >= 1e9)return `${(num/1e9).toFixed(2)}B ${unit}/hr`;
   if (num >= 1e6)return `${(num/1e6).toFixed(1)}M ${unit}/hr`;
   if (num >= 1e3)return `${(num/1e3).toFixed(1)}k ${unit}/hr`;
   return `${num} ${unit}/hr`;
 }
 
-  function renderPage(metricKey) {
+function renderPage(metricKey) {
   const data = DATASETS[metricKey];
   if (!data)return;
   currentMetric = metricKey;
   const container = document.getElementById('stripsContainer');
   if (!container)return;
   container.innerHTML = '';
-    activeCanvases = [
+  activeCanvases = [
   ];
   const microTile = createTileCanvas(data.color, data.symbol, false);
   // Each denomination is chosen so the larger population strips remain in proportion.
   // Use only familiar denominations so row labels stay consistent across categories.
-    const scaleConfig = {
-      energy: {
+  const scaleConfig = {
+    energy: {
       visualSpeed: 1000,
-        groups: {
+      groups: {
         person: 1,
         household: 1,
         smallTown: 1000,
@@ -259,9 +259,9 @@ let pixelRatio = Math.max(1, window.devicePixelRatio || 1);
         wholePlanet: 250000000
       }
     },
-      water: {
+    water: {
       visualSpeed: 100,
-        groups: {
+      groups: {
         person: 1,
         household: 1,
         smallTown: 1000,
@@ -270,9 +270,9 @@ let pixelRatio = Math.max(1, window.devicePixelRatio || 1);
         wholePlanet: 5000000000
       }
     },
-      co2: {
+    co2: {
       visualSpeed: 1000,
-        groups: {
+      groups: {
         person: 1,
         household: 1,
         smallTown: 1000,
@@ -281,10 +281,10 @@ let pixelRatio = Math.max(1, window.devicePixelRatio || 1);
         wholePlanet: 1000000000
       }
     },
-      food: {
+    food: {
       visualSpeed: 500,
       microVisualSpeed: 50000,
-        groups: {
+      groups: {
         person: 1,
         household: 1,
         smallTown: 25,
@@ -293,9 +293,9 @@ let pixelRatio = Math.max(1, window.devicePixelRatio || 1);
         wholePlanet: 10000000
       }
     },
-      waste: {
+    waste: {
       visualSpeed: 25000,
-        groups: {
+      groups: {
         person: 1,
         household: 1,
         smallTown: 1000,
@@ -306,7 +306,7 @@ let pixelRatio = Math.max(1, window.devicePixelRatio || 1);
     }
   }
   [metricKey];
-    function groupingForRow(name) {
+  function groupingForRow(name) {
     const n = name.toLowerCase(),
     g = scaleConfig.groups;
     if (n.includes('average person'))return g.person;
@@ -318,21 +318,21 @@ let pixelRatio = Math.max(1, window.devicePixelRatio || 1);
     return 1;
   }
 
-    function groupingLabel(amount) {
+  function groupingLabel(amount) {
     if (amount < 1)return String(amount * 1000) + ' g';
     if (amount >= 1e9)return String(amount / 1e9) + 'B';
     if (amount >= 1e6)return String(amount / 1e6) + 'M';
     if (amount >= 1e3)return String(amount / 1e3) + 'K';
     return String(amount);
   }
-    const tileCache = new Map( [
-      [
+  const tileCache = new Map( [
+    [
       1,
       microTile
     ]
   ]);
-    function tileForGrouping(amount) {
-      if (!tileCache.has(amount)) {
+  function tileForGrouping(amount) {
+    if (!tileCache.has(amount)) {
       tileCache.set(amount, createTileCanvas(data.color, data.symbol, true, groupingLabel(amount)));
     }
     return tileCache.get(amount);
@@ -341,15 +341,15 @@ let pixelRatio = Math.max(1, window.devicePixelRatio || 1);
   const borderUrl = `url(${microTile.toDataURL()})`;
   document.getElementById('topBorder').style.backgroundImage = borderUrl;
   document.getElementById('bottomBorder').style.backgroundImage = borderUrl;
-    function createLaneCanvases(stack, rateHr, tile, unitValue, visualSpeed, stackCount) {
-      const tracks = [
+  function createLaneCanvases(stack, rateHr, tile, unitValue, visualSpeed, stackCount) {
+    const tracks = [
     ];
-      for (let i = 0; i < stackCount; i++) {
+    for (let i = 0; i < stackCount; i++) {
       const canvas = document.createElement('canvas');
       canvas.style.width = '100%';
       canvas.style.height = '75px';
       stack.appendChild(canvas);
-        const track = {
+      const track = {
         canvas,
         ctx: canvas.getContext('2d'),
         tile,
@@ -365,7 +365,7 @@ let pixelRatio = Math.max(1, window.devicePixelRatio || 1);
     return tracks;
   }
 
-    function addTrack(labelHtml, rateHr, tile, unitValue, visualSpeed = 1, stackCount = 1) {
+  function addTrack(labelHtml, rateHr, tile, unitValue, visualSpeed = 1, stackCount = 1) {
     const desc = document.createElement('div');
     desc.className = 'description';
     desc.innerHTML = labelHtml;
@@ -376,7 +376,7 @@ let pixelRatio = Math.max(1, window.devicePixelRatio || 1);
     return createLaneCanvases(stack, rateHr, tile, unitValue, visualSpeed, stackCount);
   }
 
-    function addScaledRow(row) {
+  function addScaledRow(row) {
     const rowMultiplier = groupingForRow(row.name);
     const rowTile = tileForGrouping(rowMultiplier);
     // Normalize tile widths so the displayed pixel speed reflects rate / denomination.
@@ -410,13 +410,13 @@ let pixelRatio = Math.max(1, window.devicePixelRatio || 1);
   const userStack = document.createElement('div');
   userStack.className = 'track-stack';
   container.appendChild(userStack);
-    let userTracks = [
+  let userTracks = [
   ];
-    function niceGrouping(value) {
+  function niceGrouping(value) {
     if (!Number.isFinite(value) || value <= 1)return 1;
     // Standard sequence: 1, 2, 5, 10, 25, 50 ... then
     // 1K, 2.5K, 5K, 10K, 25K ... at larger magnitudes.
-      const candidates = [
+    const candidates = [
       1,
       2,
       5,
@@ -428,9 +428,9 @@ let pixelRatio = Math.max(1, window.devicePixelRatio || 1);
       500
     ];
     const maxExponent = Math.max(3, Math.min(300, Math.ceil(Math.log10(value) / 3) * 3 + 3));
-      for (let exponent = 3; exponent <= maxExponent; exponent += 3) {
+    for (let exponent = 3; exponent <= maxExponent; exponent += 3) {
       const magnitude = Math.pow(10, exponent);
-        [1, 2.5, 5, 10, 25, 50, 100, 250, 500].forEach(step => {
+      [1, 2.5, 5, 10, 25, 50, 100, 250, 500].forEach(step => {
         const candidate = step * magnitude;
         if (Number.isFinite(candidate))candidates.push(candidate);
       });
@@ -438,10 +438,10 @@ let pixelRatio = Math.max(1, window.devicePixelRatio || 1);
     return candidates.reduce((best, candidate) => Math.abs(Math.log(candidate / value)) < Math.abs(Math.log(best / value)) ? candidate: best, candidates[0]);
   }
 
-    function updateUserTrack(rateHr) {
+  function updateUserTrack(rateHr) {
     const previousTracks = new Set(userTracks);
     activeCanvases = activeCanvases.filter(track => !previousTracks.has(track));
-      userTracks = [
+    userTracks = [
     ];
     userStack.innerHTML = '';
     const personGrouping = scaleConfig.groups.person;
@@ -449,7 +449,7 @@ let pixelRatio = Math.max(1, window.devicePixelRatio || 1);
     const userVisualSpeed = scaleConfig.microVisualSpeed || scaleConfig.visualSpeed;
     // Automatically choose a suitable denomination for every category's
     // custom usage strip, not just Food Waste and Producing Waste.
-      if (rateHr > 0) {
+    if (rateHr > 0) {
       const targetGrouping = rateHr * microTile.width * userVisualSpeed / (3600 * 400);
       userGrouping = Math.max(personGrouping, niceGrouping(targetGrouping));
     }
@@ -462,7 +462,7 @@ let pixelRatio = Math.max(1, window.devicePixelRatio || 1);
     userTracks = createLaneCanvases(userStack, rateHr, userTile, userGrouping, userSpeed, stackCount);
     resizeCanvases();
   }
-    userInput.addEventListener('input', () => {
+  userInput.addEventListener('input', () => {
     const parsed = Number(userInput.value);
     userHourlyRate = Number.isFinite(parsed) && parsed >= 0 ? parsed: 0;
     saveUserRate(metricKey, userHourlyRate);
@@ -481,9 +481,9 @@ let pixelRatio = Math.max(1, window.devicePixelRatio || 1);
   resizeCanvases();
 }
 
-  function resizeCanvases() {
+function resizeCanvases() {
   pixelRatio = Math.max(1, window.devicePixelRatio || 1);
-    activeCanvases.forEach(t => {
+  activeCanvases.forEach(t => {
     t.logicalWidth = t.canvas.clientWidth || window.innerWidth;
     t.canvas.width = Math.round(t.logicalWidth * pixelRatio);
     t.canvas.height = Math.round(75 * pixelRatio);
@@ -492,11 +492,11 @@ let pixelRatio = Math.max(1, window.devicePixelRatio || 1);
 }
 window.addEventListener('resize', resizeCanvases);
 let lastTime = performance.now();
-  function animate(now) {
+function animate(now) {
   const dt = Math.min((now - lastTime) / 1000, 0.05);
   lastTime = now;
-    activeCanvases.forEach(track => {
-      const {
+  activeCanvases.forEach(track => {
+    const {
       ctx,
       canvas,
       tile,
@@ -510,7 +510,7 @@ let lastTime = performance.now();
     const pxPerSec = ((rateHr / 3600) / unitValue) * tileW * visualSpeed;
     track.offsetX = (track.offsetX + pxPerSec * dt) % tileW;
     ctx.clearRect(0, 0, logicalWidth, 75);
-      if (pxPerSec > 2200) {
+    if (pxPerSec > 2200) {
       // Keep the macro tiles visible at extreme rates instead of flattening
       // the whole track into a single solid-color stripe.
       const pattern = ctx.createPattern(tile, 'repeat');
@@ -521,14 +521,14 @@ let lastTime = performance.now();
       ctx.restore();
       return;
     }
-      for (let x = track.offsetX - tileW; x < logicalWidth; x += tileW) {
+    for (let x = track.offsetX - tileW; x < logicalWidth; x += tileW) {
       ctx.drawImage(tile, Math.floor(x), 0, tileW, 75);
     }
   });
   requestAnimationFrame(animate);
 }
-  document.querySelectorAll('.tab-btn[data-metric]').forEach(btn => {
-    btn.addEventListener('click', () => {
+document.querySelectorAll('.tab-btn[data-metric]').forEach(btn => {
+  btn.addEventListener('click', () => {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     renderPage(btn.dataset.metric);
