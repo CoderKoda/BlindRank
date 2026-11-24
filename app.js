@@ -188,7 +188,7 @@ function loadUserRate(metricKey) {
     const saved = window.sessionStorage.getItem('consuming-earth:user-rate:' + metricKey);
     if (saved !== null) {
       const value = Number(saved);
-      if (Number.isFinite(value) && value >= 0)return value;
+      if (Number.isFinite(value) && value >= 0) return value;
     }
   } catch (error) {
     // Continue with the category default when session storage is unavailable.
@@ -205,12 +205,11 @@ function saveUserRate(metricKey, value) {
   }
 }
 let userHourlyRate = loadUserRate(currentMetric);
-let activeCanvases = [
-];
+let activeCanvases = [];
 let pixelRatio = Math.max(1, window.devicePixelRatio || 1);
 function createTileCanvas(color, symbol, isMacro, scaleLabel = '100K') {
   const tile = document.createElement('canvas');
-  const w = isMacro ? 165: 140,
+  const w = isMacro ? 165 : 140,
   h = 75;
   tile.width = w;
   tile.height = h;
@@ -221,29 +220,28 @@ function createTileCanvas(color, symbol, isMacro, scaleLabel = '100K') {
   ctx.lineWidth = 2;
   ctx.strokeRect(10, 11, w - 20, h - 22);
   ctx.fillStyle = '#fff';
-  ctx.font = isMacro ? 'bold 20px "PT Serif", serif': '24px sans-serif';
+  ctx.font = isMacro ? 'bold 20px "PT Serif", serif' : '24px sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(isMacro ? `${symbol} ${scaleLabel}`: symbol, w / 2, h / 2 + 1);
+  ctx.fillText(isMacro ? `${symbol} ${scaleLabel}` : symbol, w / 2, h / 2 + 1);
   return tile;
 }
 
 function formatRate(num, unit) {
-  if (num >= 1e9)return `${(num/1e9).toFixed(2)}B ${unit}/hr`;
-  if (num >= 1e6)return `${(num/1e6).toFixed(1)}M ${unit}/hr`;
-  if (num >= 1e3)return `${(num/1e3).toFixed(1)}k ${unit}/hr`;
+  if (num >= 1e9) return `${(num/1e9).toFixed(2)}B ${unit}/hr`;
+  if (num >= 1e6) return `${(num/1e6).toFixed(1)}M ${unit}/hr`;
+  if (num >= 1e3) return `${(num/1e3).toFixed(1)}k ${unit}/hr`;
   return `${num} ${unit}/hr`;
 }
 
 function renderPage(metricKey) {
   const data = DATASETS[metricKey];
-  if (!data)return;
+  if (!data) return;
   currentMetric = metricKey;
   const container = document.getElementById('stripsContainer');
-  if (!container)return;
+  if (!container) return;
   container.innerHTML = '';
-  activeCanvases = [
-  ];
+  activeCanvases = [];
   const microTile = createTileCanvas(data.color, data.symbol, false);
   // Each denomination is chosen so the larger population strips remain in proportion.
   // Use only familiar denominations so row labels stay consistent across categories.
@@ -309,20 +307,20 @@ function renderPage(metricKey) {
   function groupingForRow(name) {
     const n = name.toLowerCase(),
     g = scaleConfig.groups;
-    if (n.includes('average person'))return g.person;
-    if (n.includes('average household'))return g.household;
-    if (n.includes('small town'))return g.smallTown;
-    if (n.includes('major city'))return g.majorCity;
-    if (n.includes('united states'))return g.unitedStates;
-    if (n.includes('whole planet'))return g.wholePlanet;
+    if (n.includes('average person')) return g.person;
+    if (n.includes('average household')) return g.household;
+    if (n.includes('small town')) return g.smallTown;
+    if (n.includes('major city')) return g.majorCity;
+    if (n.includes('united states')) return g.unitedStates;
+    if (n.includes('whole planet')) return g.wholePlanet;
     return 1;
   }
 
   function groupingLabel(amount) {
-    if (amount < 1)return String(amount * 1000) + ' g';
-    if (amount >= 1e9)return String(amount / 1e9) + 'B';
-    if (amount >= 1e6)return String(amount / 1e6) + 'M';
-    if (amount >= 1e3)return String(amount / 1e3) + 'K';
+    if (amount < 1) return String(amount * 1000) + ' g';
+    if (amount >= 1e9) return String(amount / 1e9) + 'B';
+    if (amount >= 1e6) return String(amount / 1e6) + 'M';
+    if (amount >= 1e3) return String(amount / 1e3) + 'K';
     return String(amount);
   }
   const tileCache = new Map( [
@@ -342,8 +340,7 @@ function renderPage(metricKey) {
   document.getElementById('topBorder').style.backgroundImage = borderUrl;
   document.getElementById('bottomBorder').style.backgroundImage = borderUrl;
   function createLaneCanvases(stack, rateHr, tile, unitValue, visualSpeed, stackCount) {
-    const tracks = [
-    ];
+    const tracks = [];
     for (let i = 0; i < stackCount; i++) {
       const canvas = document.createElement('canvas');
       canvas.style.width = '100%';
@@ -381,7 +378,7 @@ function renderPage(metricKey) {
     const rowTile = tileForGrouping(rowMultiplier);
     // Normalize tile widths so the displayed pixel speed reflects rate / denomination.
     const isFoodMicroRow = metricKey === 'food' && /average (person|household)/i.test(row.name);
-    const baseVisualSpeed = isFoodMicroRow ? scaleConfig.microVisualSpeed: scaleConfig.visualSpeed;
+    const baseVisualSpeed = isFoodMicroRow ? scaleConfig.microVisualSpeed : scaleConfig.visualSpeed;
     const visualSpeed = baseVisualSpeed * microTile.width / rowTile.width;
     const pxPerSec = (row.rateHr / 3600 / rowMultiplier) * rowTile.width * visualSpeed;
     const stackCount = Math.max(1, Math.ceil(pxPerSec / 900));
@@ -410,10 +407,9 @@ function renderPage(metricKey) {
   const userStack = document.createElement('div');
   userStack.className = 'track-stack';
   container.appendChild(userStack);
-  let userTracks = [
-  ];
+  let userTracks = [];
   function niceGrouping(value) {
-    if (!Number.isFinite(value) || value <= 1)return 1;
+    if (!Number.isFinite(value) || value <= 1) return 1;
     // Standard sequence: 1, 2, 5, 10, 25, 50 ... then
     // 1K, 2.5K, 5K, 10K, 25K ... at larger magnitudes.
     const candidates = [
@@ -432,17 +428,16 @@ function renderPage(metricKey) {
       const magnitude = Math.pow(10, exponent);
       [1, 2.5, 5, 10, 25, 50, 100, 250, 500].forEach(step => {
         const candidate = step * magnitude;
-        if (Number.isFinite(candidate))candidates.push(candidate);
+        if (Number.isFinite(candidate)) candidates.push(candidate);
       });
     }
-    return candidates.reduce((best, candidate) => Math.abs(Math.log(candidate / value)) < Math.abs(Math.log(best / value)) ? candidate: best, candidates[0]);
+    return candidates.reduce((best, candidate) => Math.abs(Math.log(candidate / value)) < Math.abs(Math.log(best / value)) ? candidate : best, candidates[0]);
   }
 
   function updateUserTrack(rateHr) {
     const previousTracks = new Set(userTracks);
     activeCanvases = activeCanvases.filter(track => !previousTracks.has(track));
-    userTracks = [
-    ];
+    userTracks = [];
     userStack.innerHTML = '';
     const personGrouping = scaleConfig.groups.person;
     let userGrouping = personGrouping;
@@ -464,7 +459,7 @@ function renderPage(metricKey) {
   }
   userInput.addEventListener('input', () => {
     const parsed = Number(userInput.value);
-    userHourlyRate = Number.isFinite(parsed) && parsed >= 0 ? parsed: 0;
+    userHourlyRate = Number.isFinite(parsed) && parsed >= 0 ? parsed : 0;
     saveUserRate(metricKey, userHourlyRate);
     updateUserTrack(userHourlyRate);
   });
